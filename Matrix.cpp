@@ -36,10 +36,10 @@ Matrix::rcmat::rcmat(unsigned int x, unsigned int y, double** data)
 	xSize = x;
 	ySize = y;
 	refCount = 1;
-	data = new double*[xSize];
+	this->data = new double*[xSize];
 	for(int xIt = 0; xIt < xSize; xIt++)
 	{
-		data[xIt] = new double[ySize];
+		this->data[xIt] = new double[ySize];
 		for(int yIt = 0; yIt<ySize; yIt++)
 		{
 			this->data[xIt][yIt] = data[xIt][yIt];
@@ -62,12 +62,16 @@ Matrix::Matrix(const Matrix& m)
 	m.mat->refCount++;
 }
 
-void Matrix::rcmat::detach()
+void Matrix::detach()
 {
-	/*mat->refCount--;
-	if(mat->refCount == 0)
-		delete mat;
-	mat = &next;*/
+	rcmat* newTab = new rcmat(mat->xSize, mat->ySize, mat->data);
+	if(mat->refCount == 1)
+		this->mat = newTab;
+	else
+	{
+		mat->refCount--;
+		this->mat = newTab;
+	}
 }
 
 void Matrix::operator=(const Matrix& m)
@@ -83,7 +87,7 @@ Matrix::Dref Matrix::operator()(unsigned int x, unsigned int y)
 
 double Matrix::operator()(unsigned int x, unsigned int y) const
 {
-	return Dref(*this, x, y);
+	return mat->data[x][y];
 }
 
 Matrix& Matrix::operator+(const Matrix& m)
@@ -118,13 +122,6 @@ std::ostream& operator<<(std::ostream& out, const Matrix& m)
 		out << "\n";
 	}
 	return out;
-}
-
-Matrix::Dref::Dref(const Matrix& initMat, unsigned int xAt, unsigned int yAt)
-{
-	matrix = initMat;
-	x = xAt;
-	y = yAt;
 }
 
 Matrix::Dref::operator double() const

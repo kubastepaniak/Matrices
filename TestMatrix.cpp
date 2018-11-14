@@ -1,11 +1,6 @@
 #include "Matrix.h"
 using namespace std;
 
-/* 	TODO LIST
-	exceptions
-	detach function
-*/
-
 int main()
 {
 	Matrix m(2, 3);

@@ -10,6 +10,7 @@ public:
 	Matrix(unsigned int x, unsigned int y);
 	Matrix(const Matrix& m);
 	~Matrix();
+	void detach();
 	void operator=(const Matrix& m);
 	Dref operator()(unsigned int x, unsigned int y);
 	double operator()(unsigned int x, unsigned int y) const;
@@ -25,14 +26,14 @@ struct Matrix::rcmat {
 	rcmat(unsigned int x, unsigned int y);
 	rcmat(unsigned int x, unsigned int y, double** data);
 	~rcmat();
-	void detach();
 };
 
 class Matrix::Dref {
 	friend class Matrix;
 	Matrix& matrix;
 	unsigned int x, y;
-	Dref(const Matrix& initMat, unsigned int xAt, unsigned int yAt);
+	Dref(Matrix& initMat, unsigned int xAt, unsigned int yAt)
+		:matrix(initMat), x(xAt), y(yAt) {};
 public:
 	operator double() const;
 	Matrix::Dref& operator=(double n);
