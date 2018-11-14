@@ -2,10 +2,10 @@
 #include <iostream>
 
 class Matrix {
-	class Dref;
 	struct rcmat;
 	rcmat *mat;
 public:
+	class Dref;
 	Matrix();
 	Matrix(unsigned int x, unsigned int y);
 	Matrix(const Matrix& m);
@@ -22,16 +22,17 @@ struct Matrix::rcmat {
 	double **data;
 	unsigned int xSize, ySize;
 	unsigned int refCount;
-	rcmat(unsigned int x = 0, unsigned int y = 0);
+	rcmat(unsigned int x, unsigned int y);
+	rcmat(unsigned int x, unsigned int y, double** data);
 	~rcmat();
+	void detach();
 };
 
 class Matrix::Dref {
 	friend class Matrix;
-	const Matrix& matrix;
+	Matrix& matrix;
 	unsigned int x, y;
-	Dref(const Matrix& initMat, unsigned int xAt, unsigned int yAt)
-		:matrix(initMat), x(xAt), y(yAt) {};
+	Dref(const Matrix& initMat, unsigned int xAt, unsigned int yAt);
 public:
 	operator double() const;
 	Matrix::Dref& operator=(double n);
