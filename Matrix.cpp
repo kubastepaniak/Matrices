@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "Errors.h"
 
 Matrix::Matrix()
 {
@@ -74,6 +75,11 @@ void Matrix::detach()
 	}
 }
 
+bool Matrix::checkDimensions(const Matrix& m)
+{
+	return (mat->xSize == m.mat->xSize && mat->ySize == m.mat->ySize);
+}
+
 void Matrix::operator=(const Matrix& m)
 {
 	this->mat = m.mat;
@@ -90,12 +96,37 @@ double Matrix::operator()(unsigned int x, unsigned int y) const
 	return mat->data[x][y];
 }
 
-Matrix& Matrix::operator+(const Matrix& m)
+Matrix& Matrix::operator+=(const Matrix& m)
 {
-	if(this->mat->xSize == m.mat->xSize && this->mat->ySize == m.mat->ySize)
-		std::cout << "addition";
-	else
-		std::cout << "cannot add matrices" << std::endl;
+	try
+	{
+		if(this->checkDimensions(m))
+		{
+			this->detach();
+			for(int xIt = 0; xIt < mat->xSize; xIt++)
+			{
+				for(int yIt = 0; yIt < mat->ySize; yIt++)
+				{
+					mat->data[xIt][yIt] += m.mat->data[xIt][yIt];
+				}
+			}
+			return *this;
+		}
+		else
+			throw DifferentMatrixDimensions();
+	}
+	catch(DifferentMatrixDimensions& e)
+	{
+		std::cerr << e.what() << std::endl;
+		abort();
+	}
+}
+
+Matrix Matrix::operator+(const Matrix& m)
+{
+	Matrix newMat(*this);
+	newMat += m;				// make this to somehow throw exception and not allow -
+	return Matrix(newMat);		// - this line to execute
 }
 
 std::istream& operator>>(std::istream& in, const Matrix& m)
@@ -104,7 +135,24 @@ std::istream& operator>>(std::istream& in, const Matrix& m)
 	{
 		for(int y = 0; y < m.mat->ySize; y++)
 		{
-			in >> m.mat->data[x][y];
+			while(true)
+			{
+				try
+				{
+					if(in >> m.mat->data[x][y])
+						break;
+					else
+					{
+						in.clear();
+						in.ignore();
+						throw WrongInput();
+					}
+				}
+				catch(WrongInput& e)
+				{
+					std::cerr << e.what() << std::endl;
+				}
+			}
 		}
 	}
 	return in;

@@ -11,10 +11,12 @@ public:
 	Matrix(const Matrix& m);
 	~Matrix();
 	void detach();
+	bool checkDimensions(const Matrix& m);
 	void operator=(const Matrix& m);
 	Dref operator()(unsigned int x, unsigned int y);
 	double operator()(unsigned int x, unsigned int y) const;
-	Matrix& operator+(const Matrix& m);
+	Matrix& operator+=(const Matrix& m);
+	Matrix operator+(const Matrix& m);
 	friend std::istream& operator>>(std::istream& in, const Matrix& m);
 	friend std::ostream& operator<<(std::ostream& out, const Matrix& m);
 };
