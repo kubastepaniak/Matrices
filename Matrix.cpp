@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "Errors.h"
 
 Matrix::Matrix()
 {
@@ -36,10 +37,10 @@ Matrix::rcmat::rcmat(unsigned int x, unsigned int y, double** data)
 	xSize = x;
 	ySize = y;
 	refCount = 1;
-	data = new double*[xSize];
+	this->data = new double*[xSize];
 	for(int xIt = 0; xIt < xSize; xIt++)
 	{
-		data[xIt] = new double[ySize];
+		this->data[xIt] = new double[ySize];
 		for(int yIt = 0; yIt<ySize; yIt++)
 		{
 			this->data[xIt][yIt] = data[xIt][yIt];
@@ -62,12 +63,26 @@ Matrix::Matrix(const Matrix& m)
 	m.mat->refCount++;
 }
 
-void Matrix::rcmat::detach()
+void Matrix::detach()
 {
-	/*mat->refCount--;
-	if(mat->refCount == 0)
-		delete mat;
-	mat = &next;*/
+	rcmat* newTab = new rcmat(mat->xSize, mat->ySize, mat->data);
+	if(mat->refCount == 1)
+		this->mat = newTab;
+	else
+	{
+		mat->refCount--;
+		this->mat = newTab;
+	}
+}
+
+bool Matrix::checkDimensions(const Matrix& m)
+{
+	return (mat->xSize == m.mat->xSize && mat->ySize == m.mat->ySize);
+}
+
+bool Matrix::checkMultiplicationCondition(const Matrix& m)
+{
+	return (mat->ySize == m.mat->xSize);
 }
 
 void Matrix::operator=(const Matrix& m)
@@ -83,15 +98,108 @@ Matrix::Dref Matrix::operator()(unsigned int x, unsigned int y)
 
 double Matrix::operator()(unsigned int x, unsigned int y) const
 {
-	return Dref(*this, x, y);
+	return mat->data[x][y];
 }
 
-Matrix& Matrix::operator+(const Matrix& m)
+Matrix& Matrix::operator+=(const Matrix& m)
 {
-	if(this->mat->xSize == m.mat->xSize && this->mat->ySize == m.mat->ySize)
-		std::cout << "addition";
-	else
-		std::cout << "cannot add matrices" << std::endl;
+	try
+	{
+		if(this->checkDimensions(m))
+		{
+			this->detach();
+			for(int xIt = 0; xIt < mat->xSize; xIt++)
+			{
+				for(int yIt = 0; yIt < mat->ySize; yIt++)
+				{
+					mat->data[xIt][yIt] += m.mat->data[xIt][yIt];
+				}
+			}
+			return *this;
+		}
+		else
+			throw DifferentMatrixDimensions();
+	}
+	catch(DifferentMatrixDimensions& e)
+	{
+		std::cerr << e.what() << std::endl;
+		abort();
+	}
+}
+
+Matrix Matrix::operator+(const Matrix& m)
+{
+	Matrix newMat(*this);
+	newMat += m;
+	return Matrix(newMat);
+}
+
+Matrix& Matrix::operator-=(const Matrix& m)
+{
+	try
+	{
+		if(this->checkDimensions(m))
+		{
+			this->detach();
+			for(int xIt = 0; xIt < mat->xSize; xIt++)
+			{
+				for(int yIt = 0; yIt < mat->ySize; yIt++)
+				{
+					mat->data[xIt][yIt] -= m.mat->data[xIt][yIt];
+				}
+			}
+			return *this;
+		}
+		else
+			throw DifferentMatrixDimensions();
+	}
+	catch(DifferentMatrixDimensions& e)
+	{
+		std::cerr << e.what() << std::endl;
+		abort();
+	}
+}
+
+Matrix Matrix::operator-(const Matrix& m)
+{
+	Matrix newMat(*this);
+	newMat -= m;
+	return Matrix(newMat);
+}
+
+Matrix& Matrix::operator*=(const Matrix& m)
+{
+	*this = *this * m;
+	return *this;
+}
+
+Matrix Matrix::operator*(const Matrix& m)
+{
+	try
+	{
+		if(this->checkMultiplicationCondition(m))
+		{
+			Matrix newMat(this->mat->xSize, m.mat->ySize);
+			for(int xIt = 0; xIt < this->mat->xSize; xIt++)
+			{
+				for(int yIt = 0; yIt < m.mat->ySize; yIt++)
+				{
+					for (int compI = 0; compI < m.mat->ySize; compI++)
+					{
+						newMat.mat->data[xIt][yIt] += (m.mat->data[xIt][compI] * m.mat->data[compI][yIt]);
+					}
+				}
+			}
+			return newMat;
+		}
+		else
+			throw DifferentMatrixDimensions();
+	}
+	catch(DifferentMatrixDimensions& e)
+	{
+		std::cerr << e.what() << std::endl;
+		abort();
+	}
 }
 
 std::istream& operator>>(std::istream& in, const Matrix& m)
@@ -100,7 +208,24 @@ std::istream& operator>>(std::istream& in, const Matrix& m)
 	{
 		for(int y = 0; y < m.mat->ySize; y++)
 		{
-			in >> m.mat->data[x][y];
+			while(true)
+			{
+				try
+				{
+					if(in >> m.mat->data[x][y])
+						break;
+					else
+					{
+						in.clear();
+						in.ignore();
+						throw WrongInput();
+					}
+				}
+				catch(WrongInput& e)
+				{
+					std::cerr << e.what() << std::endl;
+				}
+			}
 		}
 	}
 	return in;
@@ -118,13 +243,6 @@ std::ostream& operator<<(std::ostream& out, const Matrix& m)
 		out << "\n";
 	}
 	return out;
-}
-
-Matrix::Dref::Dref(const Matrix& initMat, unsigned int xAt, unsigned int yAt)
-{
-	matrix = initMat;
-	x = xAt;
-	y = yAt;
 }
 
 Matrix::Dref::operator double() const
