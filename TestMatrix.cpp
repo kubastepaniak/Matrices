@@ -1,11 +1,6 @@
 #include "Matrix.h"
 using namespace std;
 
-/* 	TODO LIST
-	exceptions
-	detach function
-*/
-
 int main()
 {
 	Matrix m(2, 3);
@@ -19,11 +14,11 @@ int main()
 	m3 = m;
 	cout << m3;
 
-	cout << m(1, 2) << endl;
+	cout << endl << m(1, 2) << endl;
 	m(1, 2) = 23;
 	cout << m(1, 2) << endl;
 
-	cout << m << m2 << m3;
+	cout << m << m2;
 
 	return 0;
 }

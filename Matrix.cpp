@@ -31,6 +31,22 @@ Matrix::rcmat::rcmat(unsigned int x, unsigned int y)
 	}
 }
 
+Matrix::rcmat::rcmat(unsigned int x, unsigned int y, double** data)
+{
+	xSize = x;
+	ySize = y;
+	refCount = 1;
+	data = new double*[xSize];
+	for(int xIt = 0; xIt < xSize; xIt++)
+	{
+		data[xIt] = new double[ySize];
+		for(int yIt = 0; yIt<ySize; yIt++)
+		{
+			this->data[xIt][yIt] = data[xIt][yIt];
+		}
+	}
+}
+
 Matrix::rcmat::~rcmat()
 {
 	for(int xIt = 0; xIt < xSize; xIt++)
@@ -44,6 +60,14 @@ Matrix::Matrix(const Matrix& m)
 {
 	this->mat = m.mat;
 	m.mat->refCount++;
+}
+
+void Matrix::rcmat::detach()
+{
+	/*mat->refCount--;
+	if(mat->refCount == 0)
+		delete mat;
+	mat = &next;*/
 }
 
 void Matrix::operator=(const Matrix& m)
@@ -65,18 +89,7 @@ double Matrix::operator()(unsigned int x, unsigned int y) const
 Matrix& Matrix::operator+(const Matrix& m)
 {
 	if(this->mat->xSize == m.mat->xSize && this->mat->ySize == m.mat->ySize)
-	{
 		std::cout << "addition";
-		/*
-		Matrix newMatrix(xSize, ySize);
-		for(int xit = 0; xit < xSize; xit++)
-		{
-			for(int yit = 0; yit < ySize; yit++)
-			{
-				//cref shit
-			}
-		}*/
-	}
 	else
 		std::cout << "cannot add matrices" << std::endl;
 }
@@ -107,6 +120,13 @@ std::ostream& operator<<(std::ostream& out, const Matrix& m)
 	return out;
 }
 
+Matrix::Dref::Dref(const Matrix& initMat, unsigned int xAt, unsigned int yAt)
+{
+	matrix = initMat;
+	x = xAt;
+	y = yAt;
+}
+
 Matrix::Dref::operator double() const
 {
 	return matrix.mat->data[x][y];
@@ -114,6 +134,7 @@ Matrix::Dref::operator double() const
 
 Matrix::Dref& Matrix::Dref::operator=(double n)
 {
+	matrix.detach();
 	matrix.mat->data[x][y] = n;
 	return *this;
 }
