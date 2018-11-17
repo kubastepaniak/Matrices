@@ -17,7 +17,7 @@ int main()
 
 	Matrix m4(3, 3);
 	cin >> m4;
-	cout << m4;
+	cout << BAR << m4;
 
 	cout << BAR << m(1, 2) << endl;
 	m(1, 2) = 23;
@@ -28,9 +28,13 @@ int main()
 	m2 += m3;
 	cout << m2 << m3;
 
-	Matrix m5;
+	/*Matrix m5;
 	m5 = m + m4;
-	cout << BAR << m5;
+	cout << BAR << m5;*/		// causes DifferentMatrixDimensions exception
+
+	Matrix m6;
+	m6 = m2 * m4;
+	cout << BAR << m6;
 
 	return 0;
 }

@@ -80,6 +80,11 @@ bool Matrix::checkDimensions(const Matrix& m)
 	return (mat->xSize == m.mat->xSize && mat->ySize == m.mat->ySize);
 }
 
+bool Matrix::checkMultiplicationCondition(const Matrix& m)
+{
+	return (mat->ySize == m.mat->xSize);
+}
+
 void Matrix::operator=(const Matrix& m)
 {
 	this->mat = m.mat;
@@ -125,8 +130,76 @@ Matrix& Matrix::operator+=(const Matrix& m)
 Matrix Matrix::operator+(const Matrix& m)
 {
 	Matrix newMat(*this);
-	newMat += m;				// make this to somehow throw exception and not allow -
-	return Matrix(newMat);		// - this line to execute
+	newMat += m;
+	return Matrix(newMat);
+}
+
+Matrix& Matrix::operator-=(const Matrix& m)
+{
+	try
+	{
+		if(this->checkDimensions(m))
+		{
+			this->detach();
+			for(int xIt = 0; xIt < mat->xSize; xIt++)
+			{
+				for(int yIt = 0; yIt < mat->ySize; yIt++)
+				{
+					mat->data[xIt][yIt] -= m.mat->data[xIt][yIt];
+				}
+			}
+			return *this;
+		}
+		else
+			throw DifferentMatrixDimensions();
+	}
+	catch(DifferentMatrixDimensions& e)
+	{
+		std::cerr << e.what() << std::endl;
+		abort();
+	}
+}
+
+Matrix Matrix::operator-(const Matrix& m)
+{
+	Matrix newMat(*this);
+	newMat -= m;
+	return Matrix(newMat);
+}
+
+Matrix& Matrix::operator*=(const Matrix& m)
+{
+	*this = *this * m;
+	return *this;
+}
+
+Matrix Matrix::operator*(const Matrix& m)
+{
+	try
+	{
+		if(this->checkMultiplicationCondition(m))
+		{
+			Matrix newMat(this->mat->xSize, m.mat->ySize);
+			for(int xIt = 0; xIt < this->mat->xSize; xIt++)
+			{
+				for(int yIt = 0; yIt < m.mat->ySize; yIt++)
+				{
+					for (int compI = 0; compI < m.mat->ySize; compI++)
+					{
+						newMat.mat->data[xIt][yIt] += (m.mat->data[xIt][compI] * m.mat->data[compI][yIt]);
+					}
+				}
+			}
+			return newMat;
+		}
+		else
+			throw DifferentMatrixDimensions();
+	}
+	catch(DifferentMatrixDimensions& e)
+	{
+		std::cerr << e.what() << std::endl;
+		abort();
+	}
 }
 
 std::istream& operator>>(std::istream& in, const Matrix& m)
