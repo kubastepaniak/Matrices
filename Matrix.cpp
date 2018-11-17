@@ -85,6 +85,11 @@ bool Matrix::checkMultiplicationCondition(const Matrix& m)
 	return (mat->ySize == m.mat->xSize);
 }
 
+bool Matrix::operator==(const Matrix& m)
+{
+	return (this->mat) == (m.mat);
+}
+
 void Matrix::operator=(const Matrix& m)
 {
 	this->mat = m.mat;

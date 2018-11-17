@@ -11,6 +11,8 @@ int main()
 	Matrix m2(m);
 	cout << BAR << m2;
 
+	cout << "\nm1 equal to m2?\n" << (m == m2) << endl;
+
 	Matrix m3;
 	m3 = m;
 	cout << BAR << m3;
@@ -23,6 +25,8 @@ int main()
 	m(1, 2) = 23;
 	cout << m(1, 2) << endl;
 	cout << m;
+
+	cout << BAR << "m1 equal to m2?\n" << (m == m2) << endl;
 
 	cout << BAR << m2;
 	m2 += m3;

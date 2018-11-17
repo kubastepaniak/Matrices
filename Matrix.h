@@ -13,6 +13,7 @@ public:
 	void detach();
 	bool checkDimensions(const Matrix& m);
 	bool checkMultiplicationCondition(const Matrix& m);
+	bool operator==(const Matrix& m);
 	void operator=(const Matrix& m);
 	Dref operator()(unsigned int x, unsigned int y);
 	double operator()(unsigned int x, unsigned int y) const;
