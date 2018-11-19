@@ -26,9 +26,9 @@ Matrix::rcmat::rcmat(unsigned int x, unsigned int y)
 	ySize = y;
 	refCount = 1;
 	data = new double*[xSize];
-	for(int xIt = 0; xIt < xSize; xIt++)
+	for(unsigned int xIt = 0; xIt < xSize; xIt++)
 	{
-		data[xIt] = new double[ySize];
+		data[xIt] = new double[ySize]();
 	}
 }
 
@@ -38,10 +38,10 @@ Matrix::rcmat::rcmat(unsigned int x, unsigned int y, double** data)
 	ySize = y;
 	refCount = 1;
 	this->data = new double*[xSize];
-	for(int xIt = 0; xIt < xSize; xIt++)
+	for(unsigned int xIt = 0; xIt < xSize; xIt++)
 	{
 		this->data[xIt] = new double[ySize];
-		for(int yIt = 0; yIt<ySize; yIt++)
+		for(unsigned int yIt = 0; yIt<ySize; yIt++)
 		{
 			this->data[xIt][yIt] = data[xIt][yIt];
 		}
@@ -50,7 +50,7 @@ Matrix::rcmat::rcmat(unsigned int x, unsigned int y, double** data)
 
 Matrix::rcmat::~rcmat()
 {
-	for(int xIt = 0; xIt < xSize; xIt++)
+	for(unsigned int xIt = 0; xIt < xSize; xIt++)
 	{
 		delete [] data[xIt];
 	}
@@ -113,9 +113,9 @@ Matrix& Matrix::operator+=(const Matrix& m)
 		if(this->checkDimensions(m))
 		{
 			this->detach();
-			for(int xIt = 0; xIt < mat->xSize; xIt++)
+			for(unsigned int xIt = 0; xIt < mat->xSize; xIt++)
 			{
-				for(int yIt = 0; yIt < mat->ySize; yIt++)
+				for(unsigned int yIt = 0; yIt < mat->ySize; yIt++)
 				{
 					mat->data[xIt][yIt] += m.mat->data[xIt][yIt];
 				}
@@ -146,9 +146,9 @@ Matrix& Matrix::operator-=(const Matrix& m)
 		if(this->checkDimensions(m))
 		{
 			this->detach();
-			for(int xIt = 0; xIt < mat->xSize; xIt++)
+			for(unsigned int xIt = 0; xIt < mat->xSize; xIt++)
 			{
-				for(int yIt = 0; yIt < mat->ySize; yIt++)
+				for(unsigned int yIt = 0; yIt < mat->ySize; yIt++)
 				{
 					mat->data[xIt][yIt] -= m.mat->data[xIt][yIt];
 				}
@@ -185,11 +185,11 @@ Matrix Matrix::operator*(const Matrix& m)
 		if(this->checkMultiplicationCondition(m))
 		{
 			Matrix newMat(this->mat->xSize, m.mat->ySize);
-			for(int xIt = 0; xIt < this->mat->xSize; xIt++)
+			for(unsigned int xIt = 0; xIt < this->mat->xSize; xIt++)
 			{
-				for(int yIt = 0; yIt < m.mat->ySize; yIt++)
+				for(unsigned int yIt = 0; yIt < m.mat->ySize; yIt++)
 				{
-					for (int compI = 0; compI < m.mat->ySize; compI++)
+					for (unsigned int compI = 0; compI < m.mat->ySize; compI++)
 					{
 						newMat.mat->data[xIt][yIt] += (m.mat->data[xIt][compI] * m.mat->data[compI][yIt]);
 					}
@@ -209,9 +209,9 @@ Matrix Matrix::operator*(const Matrix& m)
 
 std::istream& operator>>(std::istream& in, const Matrix& m)
 {
-	for(int x = 0; x < m.mat->xSize; x++)
+	for(unsigned int x = 0; x < m.mat->xSize; x++)
 	{
-		for(int y = 0; y < m.mat->ySize; y++)
+		for(unsigned int y = 0; y < m.mat->ySize; y++)
 		{
 			while(true)
 			{
@@ -239,9 +239,9 @@ std::istream& operator>>(std::istream& in, const Matrix& m)
 std::ostream& operator<<(std::ostream& out, const Matrix& m)
 {
 	out << "\n";
-	for(int x = 0; x < m.mat->xSize; x++)
+	for(unsigned int x = 0; x < m.mat->xSize; x++)
 	{
-		for(int y = 0; y < m.mat->ySize; y++)
+		for(unsigned int y = 0; y < m.mat->ySize; y++)
 		{
 			out << m.mat->data[x][y] << "\t";
 		}
