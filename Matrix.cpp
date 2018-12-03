@@ -1,5 +1,4 @@
 #include "Matrix.h"
-#include "Errors.h"
 
 Matrix::Matrix()
 {
@@ -75,12 +74,15 @@ void Matrix::detach()
 	}
 }
 
-bool Matrix::checkDimensions(const Matrix& m) const
+bool Matrix::checkDimensions(const Matrix& m) const throw(DifferentMatrixDimensions)
 {
-	return (mat->xSize == m.mat->xSize && mat->ySize == m.mat->ySize);
+	if (mat->xSize == m.mat->xSize && mat->ySize == m.mat->ySize)
+		return true;
+	else
+		throw DifferentMatrixDimensions();
 }
 
-bool Matrix::checkMultiplicationCondition(const Matrix& m) const
+bool Matrix::checkMultiplicationCondition(const Matrix& m) const throw(DifferentMatrixDimensions)
 {
 	return (mat->ySize == m.mat->xSize);
 }
@@ -122,8 +124,6 @@ Matrix& Matrix::operator+=(const Matrix& m)
 			}
 			return *this;
 		}
-		else
-			throw DifferentMatrixDimensions();
 	}
 	catch(DifferentMatrixDimensions& e)
 	{
@@ -155,8 +155,6 @@ Matrix& Matrix::operator-=(const Matrix& m)
 			}
 			return *this;
 		}
-		else
-			throw DifferentMatrixDimensions();
 	}
 	catch(DifferentMatrixDimensions& e)
 	{
@@ -230,7 +228,6 @@ std::istream& operator>>(std::istream& in, Matrix& m)
 					in.clear();
 					in.ignore();
 					std::cout << "Wrong Input (NAN)" << std::endl;
-					//throw WrongInput();
 				}
 			}
 		}

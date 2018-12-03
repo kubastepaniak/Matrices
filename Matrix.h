@@ -1,12 +1,13 @@
 #pragma once
 #include <iostream>
+#include "Errors.h"
 
 class Matrix {
 	struct rcmat;
 	rcmat *mat;
 	void detach();
-	bool checkDimensions(const Matrix& m) const;
-	bool checkMultiplicationCondition(const Matrix& m) const;
+	bool checkDimensions(const Matrix& m) const throw(DifferentMatrixDimensions);
+	bool checkMultiplicationCondition(const Matrix& m) const throw(DifferentMatrixDimensions);
 public:
 	class Dref;
 	Matrix();
