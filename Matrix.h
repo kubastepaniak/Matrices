@@ -23,7 +23,7 @@ public:
 	Matrix operator+(const Matrix& m);
 	Matrix operator-(const Matrix& m);
 	Matrix operator*(const Matrix& m);
-	friend std::istream& operator>>(std::istream& in, const Matrix& m);
+	friend std::istream& operator>>(std::istream& in, Matrix* m);
 	friend std::ostream& operator<<(std::ostream& out, const Matrix& m);
 };
 

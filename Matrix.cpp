@@ -207,17 +207,25 @@ Matrix Matrix::operator*(const Matrix& m)
 	}
 }
 
-std::istream& operator>>(std::istream& in, const Matrix& m)
+std::istream& operator>>(std::istream& in, Matrix* m)
 {
-	for(unsigned int x = 0; x < m.mat->xSize; x++)
+	if(m->mat == NULL)
 	{
-		for(unsigned int y = 0; y < m.mat->ySize; y++)
+		unsigned int x, y;
+		in >> x;
+		in >> y;
+		m->mat = new Matrix::rcmat(x,y);
+	}
+
+	for(unsigned int x = 0; x < m->mat->xSize; x++)
+	{
+		for(unsigned int y = 0; y < m->mat->ySize; y++)
 		{
 			while(true)
 			{
 				try
 				{
-					if(in >> m.mat->data[x][y])
+					if(in >> m->mat->data[x][y])
 						break;
 					else
 					{

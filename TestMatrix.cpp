@@ -1,11 +1,20 @@
+#include <fstream>
 #include "Matrix.h"
 #define BAR "\n----------------------------\n"
 using namespace std;
 
 int main()
 {
+	ifstream file("data.txt");
+
+	Matrix mFile;
+	file >> &mFile;
+	cout << mFile;
+
+	file.close();
+	
 	Matrix m(2, 3);
-	cin >> m;
+	cin >> &m;
 	cout << BAR << m;
 
 	Matrix m2(m);
@@ -18,7 +27,7 @@ int main()
 	cout << BAR << m3;
 
 	Matrix m4(3, 3);
-	cin >> m4;
+	cin >> &m4;
 	cout << BAR << m4;
 
 	cout << BAR << m(1, 2) << endl;
