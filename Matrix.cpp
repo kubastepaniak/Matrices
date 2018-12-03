@@ -75,17 +75,17 @@ void Matrix::detach()
 	}
 }
 
-bool Matrix::checkDimensions(const Matrix& m)
+bool Matrix::checkDimensions(const Matrix& m) const
 {
 	return (mat->xSize == m.mat->xSize && mat->ySize == m.mat->ySize);
 }
 
-bool Matrix::checkMultiplicationCondition(const Matrix& m)
+bool Matrix::checkMultiplicationCondition(const Matrix& m) const
 {
 	return (mat->ySize == m.mat->xSize);
 }
 
-bool Matrix::operator==(const Matrix& m)
+bool Matrix::operator==(const Matrix& m) const
 {
 	return (this->mat) == (m.mat);
 }
@@ -132,7 +132,7 @@ Matrix& Matrix::operator+=(const Matrix& m)
 	}
 }
 
-Matrix Matrix::operator+(const Matrix& m)
+Matrix Matrix::operator+(const Matrix& m) const
 {
 	Matrix newMat(*this);
 	newMat += m;
@@ -165,7 +165,7 @@ Matrix& Matrix::operator-=(const Matrix& m)
 	}
 }
 
-Matrix Matrix::operator-(const Matrix& m)
+Matrix Matrix::operator-(const Matrix& m) const
 {
 	Matrix newMat(*this);
 	newMat -= m;
@@ -178,7 +178,7 @@ Matrix& Matrix::operator*=(const Matrix& m)
 	return *this;
 }
 
-Matrix Matrix::operator*(const Matrix& m)
+Matrix Matrix::operator*(const Matrix& m) const
 {
 	try
 	{
@@ -207,36 +207,30 @@ Matrix Matrix::operator*(const Matrix& m)
 	}
 }
 
-std::istream& operator>>(std::istream& in, Matrix* m)
+std::istream& operator>>(std::istream& in, Matrix& m)
 {
-	if(m->mat == NULL)
+	if(m.mat == NULL)
 	{
 		unsigned int x, y;
 		in >> x;
 		in >> y;
-		m->mat = new Matrix::rcmat(x,y);
+		m.mat = new Matrix::rcmat(x,y);
 	}
 
-	for(unsigned int x = 0; x < m->mat->xSize; x++)
+	for(unsigned int x = 0; x < m.mat->xSize; x++)
 	{
-		for(unsigned int y = 0; y < m->mat->ySize; y++)
+		for(unsigned int y = 0; y < m.mat->ySize; y++)
 		{
 			while(true)
 			{
-				try
+				if(in >> m.mat->data[x][y])
+					break;
+				else
 				{
-					if(in >> m->mat->data[x][y])
-						break;
-					else
-					{
-						in.clear();
-						in.ignore();
-						throw WrongInput();
-					}
-				}
-				catch(WrongInput& e)
-				{
-					std::cerr << e.what() << std::endl;
+					in.clear();
+					in.ignore();
+					std::cout << "Wrong Input (NAN)" << std::endl;
+					//throw WrongInput();
 				}
 			}
 		}

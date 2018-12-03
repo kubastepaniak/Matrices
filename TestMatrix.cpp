@@ -8,13 +8,13 @@ int main()
 	ifstream file("data.txt");
 
 	Matrix mFile;
-	file >> &mFile;
+	file >> mFile;
 	cout << mFile;
 
 	file.close();
 	
 	Matrix m(2, 3);
-	cin >> &m;
+	cin >> m;
 	cout << BAR << m;
 
 	Matrix m2(m);
@@ -27,7 +27,7 @@ int main()
 	cout << BAR << m3;
 
 	Matrix m4(3, 3);
-	cin >> &m4;
+	cin >> m4;
 	cout << BAR << m4;
 
 	cout << BAR << m(1, 2) << endl;
@@ -40,10 +40,12 @@ int main()
 	cout << BAR << m2;
 	m2 += m3;
 	cout << m2 << m3;
-
-	/*Matrix m5;
+	
+	
+	Matrix m5;
 	m5 = m + m4;
-	cout << BAR << m5;*/		// causes DifferentMatrixDimensions exception
+	cout << BAR << m5; // causes DifferentMatrixDimensions exception
+	
 
 	Matrix m6;
 	m6 = m2 * m4;

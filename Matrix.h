@@ -4,26 +4,26 @@
 class Matrix {
 	struct rcmat;
 	rcmat *mat;
+	void detach();
+	bool checkDimensions(const Matrix& m) const;
+	bool checkMultiplicationCondition(const Matrix& m) const;
 public:
 	class Dref;
 	Matrix();
 	Matrix(unsigned int x, unsigned int y);
 	Matrix(const Matrix& m);
 	~Matrix();
-	void detach();
-	bool checkDimensions(const Matrix& m);
-	bool checkMultiplicationCondition(const Matrix& m);
-	bool operator==(const Matrix& m);
+	bool operator==(const Matrix& m) const;
 	void operator=(const Matrix& m);
 	Dref operator()(unsigned int x, unsigned int y);
 	double operator()(unsigned int x, unsigned int y) const;
 	Matrix& operator+=(const Matrix& m);
 	Matrix& operator-=(const Matrix& m);
 	Matrix& operator*=(const Matrix& m);
-	Matrix operator+(const Matrix& m);
-	Matrix operator-(const Matrix& m);
-	Matrix operator*(const Matrix& m);
-	friend std::istream& operator>>(std::istream& in, Matrix* m);
+	Matrix operator+(const Matrix& m) const;
+	Matrix operator-(const Matrix& m) const;
+	Matrix operator*(const Matrix& m) const;
+	friend std::istream& operator>>(std::istream& in, Matrix& m);
 	friend std::ostream& operator<<(std::ostream& out, const Matrix& m);
 };
 
